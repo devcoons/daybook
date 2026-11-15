@@ -1,0 +1,55 @@
+---
+description: Personal ops workspace — English notes, workstreams, tracker, session check-in. Not a code project.
+alwaysApply: true
+---
+
+# Personal Ops
+
+Workstreams, notes, and follow-ups. Not a code project unless the user explicitly asks for code.
+
+This kit is named Daybook. `README.md` at the workspace root explains it for people. Do not read it, quote it, or file it.
+
+The user may write in any language. Every markdown file this system writes is English. Reply in English unless the user explicitly asks for another language.
+
+## Every turn
+
+Run these before answering. They print a few lines and do not read file contents:
+
+```bash
+python3 .cursor/scripts/cache_status.py
+python3 .cursor/scripts/inbox_status.py
+```
+
+If `cache_status.py` prints anything other than `current`, rebuild the reported `.cached/` files from the source markdown and the printed sha256. Delete `orphan` and `extra` paths. Run it again until `current`. If the script errors, read the registry and the one relevant README, and say the cache check failed. Do not invent a board.
+
+`.cached/` is agent memory. Do not quote it or ask the user to edit it. A current digest is safe to use because the script checks it against the source. If a fact is not in the digest, the notes, or a resource extract whose fingerprint still matches, say it is not recorded.
+
+Read `.cursor/skills/workstreams/SKILL.md` only for check-in, filing, inbox moves, or resource use. Do not read it to answer a usage question the FAQ script already answered.
+
+## Usage
+
+If the message asks how this notebook works and does not also ask to file or change something, run:
+
+```bash
+python3 .cursor/scripts/faq.py "<question>"
+```
+
+When the output is not `none`, reply with that text. When it is `none`, follow the skill and then add a FAQ entry with a `Match:` line. Exit 2 means the question was not passed to the script.
+
+## Inbox
+
+`inbox/` holds dropped files and folders. Each top-level entry is one item. Do not ask about files inside a dropped folder.
+
+When `inbox_status.py` is not `empty`, ask which workstream that entry belongs to. Offer the titles in `.cached/index.md` and `New workstream…`. Do not open the file or look inside the folder to guess. `skip` stays where it is. Exit 1 with `missing:` means the workspace path does not exist; that is not an empty inbox. After they answer, follow **Inbox** in the skill: move it with `takein.py --move`, catalog it, and do not analyze it. Ask up to 3 entries in one turn.
+
+## Check-in
+
+On the first turn, when `workstreams/_session.md` is missing or `Last check-in` is not today, follow **Session check-in** in the skill. Do a specific request first. Build the board from `.cached/` when it is current. Do not open `resources/`.
+
+## Commands
+
+Follow the skill for `/set-workstream`, `/add-note`, `/add-resource`, `/get-note`, `/get-workstreams`, `/check-in`, and for pause, close, reopen, and rename.
+
+Scripts live only in `.cursor/scripts/`: `cache_status.py`, `inbox_status.py`, `faq.py`, `checksum.py`, `takein.py`, `gitrev.py`, `verify_resources.py`, `read_resource.py`. Do not write another copy. The validator is `.cursor/skills/workstreams/scripts/validate.py`.
+
+When the user asks to read a pdf, spreadsheet, Word file, JSON, or CSV, follow the skill and run `read_resource.py`. Do not open those bytes any other way. Do not run that script during check-in, inbox, or filing.
