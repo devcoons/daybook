@@ -1,5 +1,5 @@
 # Personal notebook. The published kit is .cursor/.
 .cached/
-workstreams/
+/workstreams/
 inbox/**
 !inbox/.gitkeep
